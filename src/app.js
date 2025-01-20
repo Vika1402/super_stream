@@ -22,4 +22,13 @@ app.use(
 app.use(express.static("public"));
 
 app.use(cookieParser());
+
+//route import
+import userRouter from "./routes/user.routes.js";
+
+app.get("/ping", (req, res) => {
+  return res.send("pong");
+});
+//routes declation
+app.use("/api/v1/users", userRouter);
 export { app };
