@@ -1,3 +1,4 @@
+import { response } from "express";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -163,12 +164,40 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingrefereshToken =
-    req.cookie.refereshToken || req.body.refereshToken;
+  try {
+    const incomingrefereshToken =
+      req.cookie.refereshToken || req.body.refereshToken;
 
-  if (!incomingrefereshToken) {
-    throw new ApiError(401, "Unauthorized Request");
+    if (!incomingrefereshToken) {
+      throw new ApiError(401, "Unauthorized Request");
+    }
+    const decodedToken = jwt.verify(
+      incomingrefereshToken,
+      process.env.ACCESS_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decodedToken?._id);
+
+    if (!user) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+
+    if (incomingrefereshToken !== user?.refereshToken) {
+      throw new ApiError(404, "Refresh Token expired or use");
+    }
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+    const { accessToken, newRefereshToken } =
+      await generateAccessAnsRefreshTokens(user._id);
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refereshToken", newRefereshToken, options)
+      .json((200, { accessToken, newRefereshToken }, "Access Token refreshed"));
+  } catch (error) {
+    throw new ApiError(404, "Invalid reffresh token");
   }
-  jwt.verify(incomingrefereshToken, process.env.ACCESS_TOKEN_SECRET);
 });
-export { registerUser, loginUser, logoutUser };
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
