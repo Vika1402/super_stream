@@ -50,16 +50,30 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+//following code show where we bcvrypt out user password to just save in database using pre and save option by mongoose
+//pre is a triggerd fun where we pass our operation like save and made as middlewares !!
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
+//after we make a userScema.methodsas function we can pass this function as ------- using login time
+//code use in controller when user login
+// const isPasswordValid = await user.isPasswordCorrect(password);
+// if (!isPasswordValid) {
+//   throw new ApiError(401, "Invalid user credentials");
+// }
+//-----------and perform user is correct password or not using bcrypt.compare(user_current_password,database_password) function
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+//followinf code expalin about how to generete token using jwt ------gain we craeet a methods for userrSchema when user login and there password is correct soo
+//code use in controoller
+// const { accessToken, refreshToken } = await generateAccessAnsRefreshTokens(
+//   user._id
+// );
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
@@ -75,7 +89,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-userSchema.methods.refreshGenerateToken = function () {
+userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,

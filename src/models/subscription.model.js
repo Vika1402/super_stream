@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const subscriptionModel = new mongoose.Schema(
   {
     subscriber: {
-      type: mongoose.Schema.Types.ObjectId, //one whi os sbubscriing
+      type: mongoose.Schema.Types.ObjectId, //like yt subscriber who use yt 
       ref: "User",
     },
     channel: {
-      type: mongoose.Schema.Types.ObjectId, //one to whome sunscriber who sbscribing
+      type: mongoose.Schema.Types.ObjectId, //most time we subscribe yt channel similer 
       ref: "User",
     },
   },

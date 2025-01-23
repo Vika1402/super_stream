@@ -1,0 +1,5 @@
+                                         <ABOUT COOKIES>
+Cookies are used to manage sessions in web applications, helping the website remember users as they browse. For example, when you log into a website, a cookie is created to store a session ID or token. This cookie is sent back to the website with every request, so the server knows who you are and keeps you logged in. It’s also used to track things like items in your shopping cart. Without cookies, the website would forget you every time you load a new page.
+
+
+2) we give middleware in routes file .
